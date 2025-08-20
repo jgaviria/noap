@@ -17,19 +17,15 @@ defmodule Noap.Client do
     |> parse(operation)
   end
 
-  def parse({:ok, status_code, soap_response}, _operation) when status_code >= 400 do
+  defp parse({:ok, status_code, soap_response}, _operation) when status_code >= 400 do
+    Logger.error("SOAP call failed status_code=#{status_code}: #{inspect(soap_response)}")
+
     error =
       SweetXml.parse(soap_response, namespace_conformant: true)
       |> xpath(
         ~x"soap:Body/soap:Fault/faultstring/text()"s
         |> add_soap_namespace("soap")
       )
-
-    if error == "Conversion from SOAP failed" do
-      Logger.warning("Chex conversion from SOAP failed status_code=#{status_code}: #{soap_response}")
-    else
-      Logger.error("SOAP call failed status_code=#{status_code}: #{soap_response}")
-    end
 
     error =
       if is_nil(error) || error == "" do
@@ -41,14 +37,14 @@ defmodule Noap.Client do
     {:error, status_code, error}
   end
 
-  def parse({:ok, status_code, soap_response}, operation) do
+  defp parse({:ok, status_code, soap_response}, operation) do
     Logger.debug("SOAP respone = #{soap_response}")
     response_xml_schema = Noap.XMLSchema.Response.parse_soap_response(soap_response, operation)
 
     {:ok, status_code, response_xml_schema}
   end
 
-  def parse({:error, error}, _operation) do
+  defp parse({:error, error}, _operation) do
     Logger.error("SOAP call error: #{error}")
     {:error, 500, error}
   end
