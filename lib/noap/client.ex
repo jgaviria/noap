@@ -18,7 +18,7 @@ defmodule Noap.Client do
   end
 
   defp parse({:ok, status_code, soap_response}, _operation) when status_code >= 400 do
-    Logger.error("SOAP call failed status_code=#{status_code}: #{inspect(soap_response)}")
+    Logger.error("Error processing SOAP call status_code: #{status_code}, response: #{inspect(soap_response)}")
 
     error =
       SweetXml.parse(soap_response, namespace_conformant: true)
@@ -45,7 +45,7 @@ defmodule Noap.Client do
   end
 
   defp parse({:error, error}, _operation) do
-    Logger.error("SOAP call error: #{error}")
+    Logger.error("SOAP call error: #{inspect(error)}")
     {:error, 500, error}
   end
 
