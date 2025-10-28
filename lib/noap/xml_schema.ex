@@ -10,6 +10,7 @@ defmodule Noap.XMLSchema do
   end
 
   defmacro xml_schema(do: block) do
+    validate_schema_block!(block)
     schema(block)
   end
 
@@ -49,6 +50,22 @@ defmodule Noap.XMLSchema do
         unquote(type),
         unquote(opts)
       )
+    end
+  end
+
+  defp validate_schema_block!(block) do
+    cond do
+      function_exported?(Macro, :validate, 1) ->
+        case Macro.validate(block) do
+          :ok -> :ok
+          {:error, errors} -> raise ArgumentError, "Invalid xml_schema definition: #{inspect(errors)}"
+        end
+
+      function_exported?(:elixir_quote, :shallow_validate_ast, 1) ->
+        apply(:elixir_quote, :shallow_validate_ast, [block])
+
+      true ->
+        :ok
     end
   end
 
