@@ -21,7 +21,9 @@ defmodule Noap.XMLSchema.MapUtil do
         child_to_map_fun \\ &child_to_map/6,
         key_field \\ :name
       ) do
-    xml_schema.__struct__.xml_fields()
+    struct_module = xml_schema.__struct__()
+
+    struct_module.xml_fields()
     |> Enum.reduce(
       %{},
       fn xml_field, map ->
@@ -129,7 +131,7 @@ defmodule Noap.XMLSchema.MapUtil do
   defp get_type(%XMLField{type: xml_schema_type}, _type_map), do: xml_schema_type
 
   defp get_typemap(xml_schema) do
-    {:ok, app} = :application.get_application(xml_schema.__struct__)
+    {:ok, app} = :application.get_application(xml_schema.__struct__())
     Noap.Type.type_map(app)
   end
 end

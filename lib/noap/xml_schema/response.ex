@@ -33,9 +33,11 @@ defmodule Noap.XMLSchema.Response do
   defp parse_xml_schema(node, body_namespace, module, type_map) do
     Logger.debug("Parsing xml_schema=#{module}")
 
+    module_struct = module.__struct__()
+
     module.xml_fields()
     |> Enum.reduce(
-      module.__struct__,
+      module_struct,
       fn xml_field, model ->
         Logger.debug("Parsing xml_field=#{inspect(xml_field)}")
         value = parse_field(node, body_namespace, xml_field, type_map)
