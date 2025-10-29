@@ -116,7 +116,7 @@ defmodule Noap.XMLSchema.Request do
   end
 
   defp schema_to_xml(request_xml_schema, type_map, env) do
-    struct_module = request_xml_schema.__struct__()
+    struct_module = request_xml_schema.__struct__
 
     schema_to_xml(
       request_xml_schema,
