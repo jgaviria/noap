@@ -21,7 +21,7 @@ defmodule Noap.XMLSchema.MapUtil do
         child_to_map_fun \\ &child_to_map/6,
         key_field \\ :name
       ) do
-    xml_schema.__struct__.xml_fields
+    xml_schema.__struct__.xml_fields()
     |> Enum.reduce(
       %{},
       fn xml_field, map ->
